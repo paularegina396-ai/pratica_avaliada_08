@@ -78,7 +78,7 @@ function DeletarCategoria() {
                     Categoria
                 </header>
                 
-                {/* AQUI ESTÁ A CORREÇÃO: Tiramos o texto fixo e colocamos o dado da API */}
+               
                 <p className='h-full p-4 text-xl bg-white md:p-8 md:text-3xl'>{categoria.tipo}</p>
                 
                 <div className="flex flex-row">
