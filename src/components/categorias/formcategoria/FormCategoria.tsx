@@ -103,7 +103,7 @@ function FormCategoria() {
                 {id === undefined ? 'Cadastrar Categoria' : 'Editar Categoria'}
             </h1>
             
-            {/* AQUI ESTÁ A CORREÇÃO: O form agora executa a função */}
+           
             <form className="flex flex-col w-full max-w-md gap-4 px-2 md:max-w-1/2" onSubmit={gerarNovaCategoria}>
                 <div className="flex flex-col gap-2 ">
                     <label htmlFor="tipo">Categoria</label>
