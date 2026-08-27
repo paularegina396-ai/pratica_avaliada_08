@@ -1,4 +1,99 @@
+import axios from "axios";
+import dayjs from "dayjs";
+
+import { useNavigate } from "react-router-dom";
+import type Usuario from "../../models/Usuario";
+import { cadastrarUsuario } from "../../services/Service";
+import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from "react";
+
 function Cadastro() {
+
+	const navigate = useNavigate();
+
+ 
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const [usuario, setUsuario] = useState<Usuario>(
+    {
+      id: 0,
+      nome: '',
+      usuario: '',
+      senha: '',
+      foto: '', 
+	  dataNascimento: ''
+    }
+  )
+
+  const [confirmarSenha, setConfirmarSenha] = useState<string>('');
+
+  useEffect(() => {
+    if (usuario.id !== 0) {
+      retornar();
+    }
+  }, [usuario])
+
+
+  function atualizarEstado(e: ChangeEvent<HTMLInputElement>){
+
+    setUsuario({
+
+      ...usuario,
+      [e.target.name]: e.target.value, 
+    })
+  }
+
+  // Função responsavel por atualizar o estado confirmarSenha
+  function handleConfirmarSenha(e: ChangeEvent<HTMLInputElement>){
+    // como é o estado de 1 so atributo odemos passar o set direto
+    setConfirmarSenha(e.target.value);
+  }
+
+
+  async function cadastrarNovoUsuario(e: SyntheticEvent<HTMLFormElement>){
+    // impede que seja enviado para validações
+    e.preventDefault();
+
+	const idade = dayjs().diff(dayjs(usuario.dataNascimento), 'year');
+	if (idade < 18) {
+		alert("É necessário ter pelo menos 18 anos para se cadastrar");
+		return;
+	}
+    
+    // Valdiar a senha digitada
+    if (confirmarSenha !== usuario.senha || usuario.senha.length < 8){
+       alert("Senhas não conferem e/ou possuem menos que 8 caracteres.")
+       setUsuario({...usuario, senha:''})
+       setConfirmarSenha('')
+       return
+    }
+    setIsLoading(true);
+    try{
+      await cadastrarUsuario(`/usuarios/cadastrar`, usuario, setUsuario)
+      alert("Usuário cadastrado com sucesso!")
+
+    } catch(error){
+      if(axios.isAxiosError(error) && error.response){
+        alert(`Erro ao cadastrar o usuário: ${error.response.status}`);
+      }else {
+        alert("Erro ao cadastrar o usuário! Verifique a conexão com a API.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // Função para retornar para a página de login
+  function retornar(){
+    navigate('/');
+  }
+
+  // Só p testar em prod tiramos 
+  console.log(JSON.stringify(usuario))
+  console.log("Confrmar:", confirmarSenha)
+
+
+
+
 	return (
 		<>
 			<div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen place-items-center font-bold">
@@ -8,6 +103,7 @@ function Cadastro() {
 				></div>
 				<form
 					className="flex justify-center items-center flex-col w-full max-w-md px-6 sm:px-8 py-10 lg:py-3 gap-3"
+					onSubmit={cadastrarNovoUsuario}
 				>
 					<h2 className="text-slate-900 text-3xl sm:text-4xl lg:text-5xl text-center">Cadastrar</h2>
 
@@ -20,6 +116,8 @@ function Cadastro() {
 							placeholder="Nome"
 							className="border-2 border-slate-700 rounded p-2 w-full"
 							required
+							value={usuario.nome} 
+    						onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
 						/>
 					</div>
 
@@ -32,6 +130,8 @@ function Cadastro() {
 							placeholder="Usuario"
 							className="border-2 border-slate-700 rounded p-2 w-full"
 							required
+							value={usuario.usuario} 
+    						onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
 						/>
 					</div>
 
@@ -46,6 +146,8 @@ function Cadastro() {
 								type="text"
 								className="border-2 border-slate-700 rounded p-2 w-full"
 								placeholder="https://..."
+								value={usuario.foto} 
+    						onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
 							/>
 						</div>
 
@@ -57,6 +159,8 @@ function Cadastro() {
 							name="dataNascimento"
 							className="border-2 border-slate-700 rounded p-2 w-full"
 							required
+							value={usuario.dataNascimento} 
+    						onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
 						/>
 					</div>
 
@@ -69,6 +173,8 @@ function Cadastro() {
 							placeholder="Senha"
 							className="border-2 border-slate-700 rounded p-2 w-full"
 							required
+							value={usuario.senha} 
+    						onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
 						/>
 					</div>
 
@@ -80,6 +186,8 @@ function Cadastro() {
 							name="confirmarSenha"
 							placeholder="Confirmar Senha"
 							className="border-2 border-slate-700 rounded p-2 w-full"
+							value={confirmarSenha} 
+    						onChange={(e: ChangeEvent<HTMLInputElement>) => handleConfirmarSenha(e)}
 						/>
 					</div>
 
@@ -87,6 +195,7 @@ function Cadastro() {
 						<button
 							type="button"
 							className="rounded text-white bg-red-400 hover:bg-red-700 w-full sm:w-1/2 py-2"
+							onClick={retornar}
 						>
 							Cancelar
 						</button>

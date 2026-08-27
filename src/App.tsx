@@ -13,20 +13,29 @@ import Cadastro from "./pages/cadastro/Cadastro";
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import Perfil from "./pages/perfil/Perfil";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
 	return (
-				<BrowserRouter>
-					<Navbar />
-					<div className="flex flex-col min-h-[70vh] bg-slate-200">
-						<Routes>
-							<Route path="/" element={<Login />} />
-							<Route path="/cadastro" element={<Cadastro />} />
-							<Route path="/home" element={<Home />} />
-						</Routes>
-					</div>
-					<Footer />
-				</BrowserRouter>
+	<AuthProvider> 
+      <BrowserRouter>
+        <Navbar />
+        <div className="flex flex-col min-h-[70vh] bg-slate-200">
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/cadastro" element={<Cadastro />} />
+            <Route path="/home" element={<Home />} />
+            
+           
+            <Route path="/categorias" element={<ListarCategorias />} />
+            <Route path="/cadastrarcategoria" element={<FormCategoria />} />
+            <Route path="/editarcategoria/:id" element={<FormCategoria />} />
+            <Route path="/deletarcategoria/:id" element={<DeletarCategoria />} />
+          </Routes>
+        </div>
+        <Footer />
+      </BrowserRouter>
+    </AuthProvider>
 	)
 }
 
