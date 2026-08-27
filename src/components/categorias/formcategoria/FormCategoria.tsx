@@ -13,7 +13,7 @@ function FormCategoria() {
     const { usuario, handleLogout } = useContext(AuthContext);
     const token = usuario.token;
     
-    // O ID na URL avisa se estamos editando ou cadastrando
+
     const { id } = useParams<{ id: string }>();
 
     async function buscarCategoriaPorId() {
@@ -32,7 +32,7 @@ function FormCategoria() {
         }
     }
 
-    // Se tiver ID na URL, ele busca os dados para preencher o input
+  
     useEffect(() => {
         if (id !== undefined) {
             buscarCategoriaPorId();
